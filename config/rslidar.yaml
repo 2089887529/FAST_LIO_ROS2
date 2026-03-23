@@ -1,0 +1,125 @@
+/**:
+    ros__parameters:
+        # 是否提取特征点（边缘点/平面点），false=直接用所有点，true=只用特征点
+        # false 适合大多数场景，true 可以加速但室外开阔场景效果更好
+        feature_extract_enable: false
+
+        # 点云降采样间隔，每隔 N 个点取一个
+        # 值越大点越少速度越快但精度下降，建议 1-4
+        point_filter_num: 4
+
+        # IEKF 最大迭代次数，越大精度越高但越慢
+        # 建议 3-5，室外可以用 3，室内复杂场景用 5
+        max_iteration: 3
+
+        # 点云体素滤波大小（米），对输入点云降采样
+        # 值越大点越稀疏速度越快，室外 0.3-0.5，室内 0.1-0.3
+        filter_size_surf: 0.5
+
+        # 地图体素滤波大小（米），对地图点云降采样
+        # 值越大地图越稀疏内存越小，建议和 filter_size_surf 一致或稍大
+        filter_size_map: 0.5
+
+        # 地图立方体边长（米），滑动窗口地图的范围
+        # 值越大内存越大，建议室外 1000，室内 300
+        cube_side_length: 1000.0
+
+        # 是否输出运行时间日志
+        runtime_pos_log_enable: false
+
+        # PCD 地图保存路径
+        map_file_path: "/home/robot/slam_ws/PCD/test.pcd"
+
+        common:
+            # 点云话题名
+            lid_topic:  "/rslidar_points"
+            # IMU 话题名
+            imu_topic:  "/rslidar_imu_converted"
+
+            # 是否开启外部时间同步（如 GPS 授时）
+            # 没有外部时间同步设备时保持 false
+            time_sync_en: false
+
+            # 激光雷达相对 IMU 的时间偏移（秒）
+            # 如果点云和 IMU 时间戳不对齐可以在这里补偿
+            # 速腾内置 IMU 时间已经同步，保持 0.0
+            time_offset_lidar_to_imu: 0.0
+
+        preprocess:
+            # 雷达类型：1=Livox, 2=Velodyne, 3=Ouster, 5=RoboSense
+            lidar_type: 5
+
+            # 激光雷达线数，Airy 有 48/96/192 三种，根据实际型号填写
+            scan_line: 96
+
+            # 扫描频率（Hz），Airy 是 10Hz
+            scan_rate: 10
+
+            # 点云时间戳单位：0=秒, 1=毫秒, 2=微秒, 3=纳秒
+            # 速腾 timestamp 字段单位是秒，保持 0
+            timestamp_unit: 0
+
+            # 盲区距离（米），小于此距离的点会被过滤
+            # 速腾 Airy 盲区 <0.1m，保持 0.1
+            # 如果室内近距离场景点太少可以改成 0.01
+            blind: 0.1
+
+        mapping:
+            # 加速度计噪声协方差，值越大表示 IMU 越不可信
+            # 速腾内置 IMU 精度一般，可以适当调大到 0.1-1.0
+            acc_cov: 0.1
+
+            # 陀螺仪噪声协方差，值越大表示 IMU 越不可信
+            gyr_cov: 0.1
+
+            # 加速度计零偏随机游走协方差
+            # 值越大表示零偏变化越快，一般保持 0.0001
+            b_acc_cov: 0.001
+
+            # 陀螺仪零偏随机游走协方差
+            b_gyr_cov: 0.001
+
+            # 激光雷达水平视场角（度），Airy 是 360°
+            fov_degree: 360.0
+
+            # 最大探测距离（米），Airy 最远 60m
+            det_range: 60.0
+
+            # 是否在线估计外参，false=使用固定外参
+            # 如果外参不准可以开启让算法自动估计，但需要足够的运动激励
+            extrinsic_est_en: false
+
+            # 激光雷达相对 IMU 的平移外参（米）[x, y, z]
+            # 速腾 Airy IMU 内置在雷达里，两者几乎同位置，改为 [0,0,0]
+            # 如果雷达和 IMU 分开安装，填写实际测量值
+            extrinsic_T: [0.004180, 0.004250, -0.004460]
+
+            # 激光雷达相对 IMU 的旋转外参（3x3旋转矩阵，行优先）
+            extrinsic_R: [ 1., 0., 0.,
+                           0., 1., 0.,
+                           0., 0., 1.]
+
+        publish:
+            # 是否发布轨迹路径话题 /path
+            path_en: true
+
+            # 是否发布点云话题
+            scan_publish_en: true
+
+            # 是否发布密集点云（false=稀疏，节省带宽）
+            dense_publish_en: true
+
+            # 是否发布 IMU 坐标系下的点云
+            scan_bodyframe_pub_en: true
+
+            # 是否发布全局地图点云
+            map_en: true
+
+        pcd_save:
+            # 是否保存 PCD 地图文件
+            pcd_save_en: true
+
+            # 每隔多少帧保存一个 PCD 文件
+            # -1 表示所有帧保存到一个文件（内存占用大但方便）
+            # 建议大场景改成 100，避免内存崩溃
+            interval: -1
