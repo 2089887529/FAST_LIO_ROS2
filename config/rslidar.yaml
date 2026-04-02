@@ -34,7 +34,7 @@
             # 点云话题名
             lid_topic:  "/rslidar_points"
             # IMU 话题名
-            imu_topic:  "/rslidar_imu_converted"
+            imu_topic:  "/rslidar_imu_data"
 
             # 是否开启外部时间同步（如 GPS 授时）
             # 没有外部时间同步设备时保持 false
@@ -50,7 +50,7 @@
             lidar_type: 5
 
             # 激光雷达线数，Airy 有 48/96/192 三种，根据实际型号填写
-            scan_line: 96
+            scan_line: 16
 
             # 扫描频率（Hz），Airy 是 10Hz
             scan_rate: 10
@@ -62,7 +62,7 @@
             # 盲区距离（米），小于此距离的点会被过滤
             # 速腾 Airy 盲区 <0.1m，保持 0.1
             # 如果室内近距离场景点太少可以改成 0.01
-            blind: 1.5
+            blind: 0.1
 
         mapping:
             # 加速度计噪声协方差，值越大表示 IMU 越不可信
